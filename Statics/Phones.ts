@@ -1,4 +1,4 @@
-import {Phone} from '../Models/Phone';
+import { Phone } from '../Models/Phone';
 
 export class Phones{
     public static Admins : Phone[] = [
