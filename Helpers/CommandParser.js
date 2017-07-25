@@ -1,12 +1,7 @@
 "use strict";
 exports.__esModule = true;
-var Command = (function () {
-    function Command(command, time) {
-        this.Command = command;
-        this.Time = time;
-    }
-    return Command;
-}());
+var CommandEnum_1 = require("../Enums/CommandEnum");
+var Command_1 = require("../Models/Command");
 var CommandParser = (function () {
     function CommandParser() {
     }
@@ -16,7 +11,7 @@ var CommandParser = (function () {
         if (temp.length > 1) {
             time = parseInt(temp[1]);
         }
-        return new Command(temp[0].toUpperCase(), time);
+        return new Command_1.Command(CommandEnum_1.CommandEnum[temp[0].toUpperCase()], time);
     };
     return CommandParser;
 }());

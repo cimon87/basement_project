@@ -1,14 +1,5 @@
-class Command{
-
-    Command : string;
-    Time : number;
-
-    constructor(command:string, time:number)
-    {
-        this.Command = command;
-        this.Time = time;
-    }
-}
+import { CommandEnum } from '../Enums/CommandEnum';
+import { Command } from '../Models/Command';
 
 export class CommandParser{
     public static Parse(command:string) : Command
@@ -21,6 +12,6 @@ export class CommandParser{
             time = parseInt(temp[1]);
         }
 
-        return new Command(temp[0].toUpperCase(), time)
+        return new Command(CommandEnum[temp[0].toUpperCase()], time)
     }
 }
