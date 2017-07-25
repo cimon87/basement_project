@@ -1,5 +1,6 @@
 import { CommandEnum } from '../Enums/CommandEnum';
 import { Command } from '../Models/Command';
+import { Messages } from '../Statics/Messages';
 
 export class CommandParser{
     public static Parse(command:string) : Command
@@ -12,6 +13,12 @@ export class CommandParser{
             time = parseInt(temp[1]);
         }
 
-        return new Command(CommandEnum[temp[0].toUpperCase()], time)
+        let parsedCommand = CommandEnum[temp[0].toUpperCase()];
+        if(parsedCommand == null)
+        {
+            throw new Error(Messages.UnknownCommand + command)
+        }
+
+        return new Command(parsedCommand, time)
     }
 }

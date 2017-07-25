@@ -47,8 +47,16 @@ export class BasementSecurity
         this.ProcessMessage(senderNumber, textDecoded);
     }
 
-    ProcessMessage(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
+    ProcessMessage(number: string, text: string): void {
+        try
+        {
+            let command = CommandParser.Parse(text);
+        }
+        catch(Error)
+        {
+            this.logger.error(Error.message);
+            this.gammu.SendMessage(number, Error.message)
+        }
     }
 
     IsOlderThan(newRow : any, date : Date) : boolean

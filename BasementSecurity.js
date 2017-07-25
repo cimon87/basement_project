@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 var GammuDatabase_1 = require("./Gammu/GammuDatabase");
+var CommandParser_1 = require("./Helpers/CommandParser");
 var Logger_1 = require("./Logger/Logger");
 var PhoneVerificator_1 = require("./Verification/PhoneVerificator");
 var Messages_1 = require("./Statics/Messages");
@@ -31,8 +32,14 @@ var BasementSecurity = (function () {
         }
         this.ProcessMessage(senderNumber, textDecoded);
     };
-    BasementSecurity.prototype.ProcessMessage = function (arg0, arg1) {
-        throw new Error("Method not implemented.");
+    BasementSecurity.prototype.ProcessMessage = function (number, text) {
+        try {
+            var command = CommandParser_1.CommandParser.Parse(text);
+        }
+        catch (Error) {
+            this.logger.error(Error.message);
+            this.gammu.SendMessage(number, Error.message);
+        }
     };
     BasementSecurity.prototype.IsOlderThan = function (newRow, date) {
         var senderNumber = newRow.fields.SenderNumber;
