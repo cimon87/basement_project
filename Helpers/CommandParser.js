@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var CommandEnum_1 = require("../Enums/CommandEnum");
 var Command_1 = require("../Models/Command");
 var Messages_1 = require("../Statics/Messages");

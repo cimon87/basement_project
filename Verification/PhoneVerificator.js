@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var Phones_1 = require("../Statics/Phones");
 var Messages_1 = require("../Statics/Messages");
 var GenericResult_1 = require("../Models/GenericResult");

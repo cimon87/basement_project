@@ -61,7 +61,10 @@ class GammuDatabase
         'gammu.inbox',
         (oldRow : any, newRow : any, event : any) => {
             this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);   
-            this._inputListener(newRow);
+            if(this._inputListener != null)
+            {
+                this._inputListener(newRow);    
+            }
         }
         );
     }

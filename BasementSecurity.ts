@@ -5,52 +5,60 @@ import { Logger } from './Logger/Logger';
 import { PhoneVerificator } from './Verification/PhoneVerificator';
 import { GenericResult } from "./Models/GenericResult";
 import { Messages } from "./Statics/Messages";
+import { CommandExecutorsFactory } from "./Executors/CommandExecutorsFactory";
+import { ICommandExecutor } from "./Executors/ICommandExecutor";
 
-export class BasementSecurity
+class BasementSecurity
 {
     private gammu: GammuDatabase;
     private phoneVerificator : PhoneVerificator;
     private logger : Logger;
+    private me : BasementSecurity;
 
     public Run() : void
     {
         this.logger = new Logger('generic.log');
         this.phoneVerificator = new PhoneVerificator();
 
-        this.gammu = new GammuDatabase(this.NewMessageHandler)
+        this.gammu = new GammuDatabase((newRow) => { this.NewMessageHandler(newRow) })
         this.gammu.Connect();
     }
 
-    NewMessageHandler(newRow : any) : void
+    public NewMessageHandler(newRow : any) : void
     {
-        let senderNumber = newRow.fields.SenderNumber;
-        let textDecoded = newRow.fields.TextDecoded;
-        let updatedInDb = newRow.fields.UpdatedInDB;
+        let senderNumber: string = newRow.fields.SenderNumber;
+        let textDecoded: string = newRow.fields.TextDecoded;
+        let updatedInDb: string = newRow.fields.UpdatedInDB; 
 
-        //verify income number
-        let shouldContinue = this.VerifyNumber(senderNumber);
+        //verify income number 
+        let shouldContinue : boolean = this.VerifyNumber(senderNumber);
         if(!shouldContinue)
         {
-            return;
+            console.log('sth wrong with number');
+            return; 
         }
 
         //verify if older than now minus 2 minutes
-        var date = new Date();
+        var date : Date= new Date();
         date.setMinutes(date.getMinutes() - 2);
 
         shouldContinue = this.IsOlderThan(newRow, date);
         if(!shouldContinue)
         {
+            console.log('sth wrong with dates');
             return;
         }
 
         this.ProcessMessage(senderNumber, textDecoded);
     }
 
-    ProcessMessage(number: string, text: string): void {
+    public ProcessMessage(number: string, text: string): void {
         try
         {
             let command = CommandParser.Parse(text);
+            let executor : ICommandExecutor  = CommandExecutorsFactory.GetExecutor(command);
+            executor.SmsDatabase = this.gammu;
+            executor.Execute();
         }
         catch(Error)
         {
@@ -59,11 +67,11 @@ export class BasementSecurity
         }
     }
 
-    IsOlderThan(newRow : any, date : Date) : boolean
+    public IsOlderThan(newRow : any, date : Date) : boolean
     {
-        let senderNumber = newRow.fields.SenderNumber;
-        let textDecoded = newRow.fields.TextDecoded;
-        let updatedInDb = newRow.fields.UpdatedInDB;
+        let senderNumber = <string>newRow.fields.SenderNumber;
+        let textDecoded = <string>newRow.fields.TextDecoded;
+        let updatedInDb = <Date>newRow.fields.UpdatedInDB;
 
         let dateIsOk = false;
         if(newRow.fields.UpdatedInDB >= date)
@@ -79,7 +87,8 @@ export class BasementSecurity
         return dateIsOk;
     }
 
-    VerifyNumber(number: string): boolean {
+    public VerifyNumber(number: string) : boolean 
+    {
         let result : GenericResult = this.phoneVerificator.IsOurPhone(number);
         if(!result.IsSuccess())
         {
@@ -96,3 +105,6 @@ export class BasementSecurity
         })
     }
 }
+
+var sec = new BasementSecurity();
+sec.Run();

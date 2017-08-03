@@ -1,8 +1,13 @@
 export class GenericResult
 {
+    constructor()
+    {
+        this.Message = "";
+    }
+
     public IsSuccess() : boolean 
     { 
-         return typeof this.Message!='undefined' && this.Message != null; 
+         return this.Message === ""; 
     };
 
     public Message : string;

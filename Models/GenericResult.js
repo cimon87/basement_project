@@ -1,10 +1,11 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var GenericResult = (function () {
     function GenericResult() {
+        this.Message = "";
     }
     GenericResult.prototype.IsSuccess = function () {
-        return typeof this.Message != 'undefined' && this.Message != null;
+        return this.Message === "";
     };
     ;
     return GenericResult;

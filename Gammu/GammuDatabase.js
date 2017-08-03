@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var Credentials_1 = require("../Statics/Credentials");
 var Logger_1 = require("../Logger/Logger");
 var MySQL = require("mysql");
@@ -41,7 +41,9 @@ var GammuDatabase = (function () {
         this._mysqlEvents = MySQLEvents(Credentials_1.Credentials.MySQLEventsCredentials);
         this._mysqlEvents.add('gammu.inbox', function (oldRow, newRow, event) {
             _this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);
-            _this._inputListener(newRow);
+            if (_this._inputListener != null) {
+                _this._inputListener(newRow);
+            }
         });
     };
     return GammuDatabase;

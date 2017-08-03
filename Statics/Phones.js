@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var Phone_1 = require("../Models/Phone");
 var linqts_1 = require("linqts");
 var Phones = (function () {
