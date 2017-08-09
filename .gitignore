@@ -1,3 +1,5 @@
 node_modules/
 logs/
-*.map
+*.js.map
+*.js
+.nyc_output/
