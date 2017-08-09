@@ -4,6 +4,7 @@ import { Logger } from "../Logger/Logger";
 import * as Gpio from 'raspi-gpio';
 import { CommandEnum } from "../Enums/CommandEnum";
 import { Command } from "../Models/Command";
+import { Pins } from "../Statics/Pins";
 
 export class GenericOnOffExecutor implements ICommandExecutor
 {
@@ -18,7 +19,7 @@ export class GenericOnOffExecutor implements ICommandExecutor
     constructor(command : Command)
     {
         this.command = command;
-        this.LedGpio = new Gpio.DigitalOutput('GPIO18');
+        this.LedGpio = new Gpio.DigitalOutput(Pins.LED);
     }
 
     Execute() {

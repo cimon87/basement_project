@@ -5,7 +5,7 @@ import * as path from 'path';
 
 export class Logger implements ILogger {
     public static logFolder : string = "logs";
-    public _logger : any;
+    public _logger : winston.LoggerInstance;
 
     constructor(logName:string)
     {

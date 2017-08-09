@@ -1,0 +1,41 @@
+{
+    "name": "basement_project",
+    "version": "1.0.0",
+    "description": "",
+    "main": "BasementSecurity.js",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "awesome-typescript-loader": "^3.2.2",
+        "linqts": "^1.9.1",
+        "raspi": "^4.0.0",
+        "raspi-gpio": "^4.0.2",
+        "source-map-loader": "^0.2.1",
+        "mysql": "^2.13.0",
+        "mysql-events": "^0.0.11",
+        "source-map": "^0.5.6",
+        "winston": "^2.3.1",
+        "zongji": "^0.4.3"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.0.2",
+        "@types/mocha": "^2.2.41",
+        "@types/mysql": "^0.0.34",
+        "@types/winston": "^2.3.4",
+        "chai": "^4.1.1",
+        "mocha": "^3.5.0",
+        "mocha-typescript": "^1.1.7",
+        "nyc": "^11.1.0",
+        "source-map-support": "^0.4.15",
+        "typescript": "^2.4.2"
+    },
+    "scripts": {
+        "pretest": "tsc",
+        "test": "nyc mocha",
+        "watch": "mocha-typescript-watch",
+        "prepare": "tsc"
+    },
+    "author": "",
+    "license": "ISC"
+}

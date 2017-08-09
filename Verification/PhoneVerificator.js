@@ -1,19 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Phones_1 = require("../Statics/Phones");
-var Messages_1 = require("../Statics/Messages");
-var GenericResult_1 = require("../Models/GenericResult");
-var PhoneVerificator = (function () {
-    function PhoneVerificator() {
-    }
-    PhoneVerificator.prototype.IsOurPhone = function (number) {
-        var genericResult = new GenericResult_1.GenericResult();
-        var found = Phones_1.Phones.Admins.Any(function (x) { return x.Phone === number; });
+const Phones_1 = require("../Statics/Phones");
+const Messages_1 = require("../Statics/Messages");
+const GenericResult_1 = require("../Models/GenericResult");
+class PhoneVerificator {
+    IsOurPhone(number) {
+        let genericResult = new GenericResult_1.GenericResult();
+        let found = Phones_1.Phones.Admins.Any(x => x.Phone === number);
         if (!found) {
             genericResult.Message = Messages_1.Messages.UnknownNumberMessage + number;
         }
         return genericResult;
-    };
-    return PhoneVerificator;
-}());
+    }
+}
 exports.PhoneVerificator = PhoneVerificator;
+//# sourceMappingURL=PhoneVerificator.js.map

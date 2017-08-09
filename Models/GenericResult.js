@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var GenericResult = (function () {
-    function GenericResult() {
+class GenericResult {
+    constructor() {
         this.Message = "";
     }
-    GenericResult.prototype.IsSuccess = function () {
+    IsSuccess() {
         return this.Message === "";
-    };
+    }
     ;
-    return GenericResult;
-}());
+}
 exports.GenericResult = GenericResult;
+//# sourceMappingURL=GenericResult.js.map

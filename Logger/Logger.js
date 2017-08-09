@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var winston = require("winston");
-var path = require("path");
-var Logger = (function () {
-    function Logger(logName) {
+const fs = require("fs");
+const winston = require("winston");
+const path = require("path");
+class Logger {
+    constructor(logName) {
         if (!fs.existsSync(Logger.logFolder)) {
             fs.mkdirSync(Logger.logFolder);
         }
@@ -15,13 +15,13 @@ var Logger = (function () {
             ]
         });
     }
-    Logger.prototype.log = function (text) {
+    log(text) {
         this._logger.log('info', text);
-    };
-    Logger.prototype.error = function (text) {
+    }
+    error(text) {
         this._logger.log('error', text);
-    };
-    Logger.logFolder = "logs";
-    return Logger;
-}());
+    }
+}
+Logger.logFolder = "logs";
 exports.Logger = Logger;
+//# sourceMappingURL=Logger.js.map

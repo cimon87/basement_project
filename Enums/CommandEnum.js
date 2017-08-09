@@ -7,3 +7,4 @@ var CommandEnum;
     CommandEnum[CommandEnum["ALM"] = 2] = "ALM";
 })(CommandEnum || (CommandEnum = {}));
 exports.CommandEnum = CommandEnum;
+//# sourceMappingURL=CommandEnum.js.map

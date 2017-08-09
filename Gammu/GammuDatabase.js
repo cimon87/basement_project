@@ -1,51 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Credentials_1 = require("../Statics/Credentials");
-var Logger_1 = require("../Logger/Logger");
-var MySQL = require("mysql");
-var MySQLEvents = require("mysql-events");
-var GammuDatabase = (function () {
-    function GammuDatabase(inputListener) {
+const Credentials_1 = require("../Statics/Credentials");
+const Logger_1 = require("../Logger/Logger");
+const MySQL = require("mysql");
+const MySQLEvents = require("mysql-events");
+class GammuDatabase {
+    constructor(inputListener) {
         this._inputListener = inputListener;
         this._logger = new Logger_1.Logger("mysql.log");
     }
-    GammuDatabase.prototype.Connect = function () {
-        var _this = this;
+    Connect() {
         this._connection = MySQL.createConnection(Credentials_1.Credentials.MySQLCredentials);
-        this._connection.connect(function (error) {
+        this._connection.connect((error) => {
             if (error) {
-                _this._logger.error('error connecting: ' + error.stack);
+                this._logger.error('error connecting: ' + error.stack);
                 return;
             }
-            console.log('connected as id ' + _this._connection.threadId);
-            _this.AttachListener();
+            console.log('connected as id ' + this._connection.threadId);
+            this.AttachListener();
         });
-    };
-    GammuDatabase.prototype.Disconnect = function () {
+    }
+    Disconnect() {
         this._mysqlEvents.stop();
         this._connection.end();
-    };
-    GammuDatabase.prototype.SendMessage = function (to, text) {
-        var _this = this;
+    }
+    SendMessage(to, text) {
         if (this._connection == null) {
             throw new Error('Not connected to database');
         }
-        this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('" + to + "','" + text + "');", function (error, results, fields) {
+        this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('" + to + "','" + text + "');", (error, results, fields) => {
             if (error) {
-                _this._logger.error(error.stack);
+                this._logger.error(error.stack);
             }
         });
-    };
-    GammuDatabase.prototype.AttachListener = function () {
-        var _this = this;
+    }
+    AttachListener() {
         this._mysqlEvents = MySQLEvents(Credentials_1.Credentials.MySQLEventsCredentials);
-        this._mysqlEvents.add('gammu.inbox', function (oldRow, newRow, event) {
-            _this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);
-            if (_this._inputListener != null) {
-                _this._inputListener(newRow);
+        this._mysqlEvents.add('gammu.inbox', (oldRow, newRow, event) => {
+            this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);
+            if (this._inputListener != null) {
+                this._inputListener(newRow);
             }
         });
-    };
-    return GammuDatabase;
-}());
+    }
+}
 exports.GammuDatabase = GammuDatabase;
+//# sourceMappingURL=GammuDatabase.js.map
