@@ -1,4 +1,8 @@
+import { init } from 'raspi';
+
 export interface IListener
 {
-    constructor(pin : string, listener : (state : boolean) => void);
+    constructor(pinString : string, pullUpNumber: number);
+    AttachListener(listener : (state : number) => void);
+    Listen();
 }
