@@ -2,18 +2,17 @@
 /// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
 import * as Gpio from 'raspi-gpio';
 import * as chai from 'chai';
-import { Pins } from "../Statics/Pins";
+import { Pins } from "../src/Statics/Pins";
 
 @suite class PinTest {
 
-    public gpio : Gpio.DigitalOutput;
+    public gpio : Gpio.DigitalOutput; 
 
     @test SetHIGH18() {
-        this.gpio  = new Gpio.DigitalOutput(Pins.LED);
-        this.gpio.write(0);
-    }
+        this.gpio  = new Gpio.DigitalOutput("GPIO18");
+        this.gpio.write(1);
 
-    @test(slow(2000), timeout(4000)) destroyer() {
+        timeout(500000);
         this.gpio.write(0);
     }
 }

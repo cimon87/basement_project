@@ -1,8 +1,10 @@
 import { Credentials } from '../Statics/Credentials';
 import { Logger } from '../Logger/Logger';
 import { Phones } from '../Statics/Phones';
+import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
+
 
 class GammuDatabase
 {
@@ -12,9 +14,27 @@ class GammuDatabase
     private _mysqlEvents : MySQLEvents.MySQLEvents;
     private _logger : Logger;
 
-    constructor(inputListener : (param : any) => void) {
+    private static _instance:GammuDatabase = new GammuDatabase();
+    
+       private _score:number = 0;
+    
+       constructor() {
+           if(GammuDatabase._instance){
+               throw new Error("Error: Instantiation failed: Use SingletonDemo.getInstance() instead of new.");
+           }
+
+           this._logger = new Logger("mysql.log");
+           GammuDatabase._instance = this;
+       }
+    
+    public static getInstance():GammuDatabase
+    {
+        return GammuDatabase._instance;
+    }
+
+    public AddListener(inputListener : (param : any) => void) {
         this._inputListener = inputListener;
-        this._logger = new Logger("mysql.log");
+        
     }
 
     public Connect() : void
@@ -51,6 +71,34 @@ class GammuDatabase
             this._logger.error(error.stack);
         }
     });
+    }
+
+    public GetInbox() : Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            var query = this._connection.query('SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM inbox', (error, results, fields) => {
+                if (error) {
+                    reject(error.stack);
+                }
+                else{
+                    resolve(results);
+                }
+            });     
+        });
+    }
+
+    public GetOutbox() :  Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            var query = this._connection.query('SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM outbox', (error, results, fields) => {
+                if (error) {
+                    reject(error.stack);
+                }
+                else{
+                    resolve(results);
+                }
+            });     
+        });
     }
 
     public AttachListener() : void
