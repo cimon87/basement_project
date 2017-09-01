@@ -58,6 +58,27 @@ class GammuDatabase
         this._connection.end();
     } 
 
+    public SendMessageJSON(jsonDeserialized : any) : Promise<any>
+    {
+        return new Promise((resolve, reject) =>{
+            if(this._connection == null)
+                {
+                    throw new Error('Not connected to database');    
+                }
+        
+                this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ jsonDeserialized.to +"','" + jsonDeserialized.text + "');",
+                (error, results, fields) => {
+                if (error) {
+                    this._logger.error(error.stack);
+                    reject(error.stack);
+                }
+                else{
+                    resolve(results);
+                }
+            })
+        });
+    }
+
     public SendMessage(to: string, text: string) : void
     {
         if(this._connection == null)
@@ -67,16 +88,16 @@ class GammuDatabase
 
         this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ to +"','" + text + "');",
         (error, results, fields) => {
-        if (error) {
-            this._logger.error(error.stack);
-        }
-    });
+            if (error) {
+                this._logger.error(error.stack);
+            }
+        });
     }
 
-    public GetInbox() : Promise<any>
+    public GetInbox() : any
     {
         return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM inbox', (error, results, fields) => {
+            var query = this._connection.query('SELECT ID, SenderNumber, TextDecoded, ReceivingDateTime FROM inbox', (error, results, fields) => {
                 if (error) {
                     reject(error.stack);
                 }

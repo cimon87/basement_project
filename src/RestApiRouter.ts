@@ -8,7 +8,8 @@ export class RestApiRouter
         app.route('/messages/inbox')
             .get(MessagesController.GetInbox);
 
-            app.route('/messages/outbox')
-            .get(MessagesController.GetOutbox);
+        app.route('/messages/outbox')
+        .get(MessagesController.GetOutbox)
+        .post(MessagesController.SendMessage);
     }
 }

@@ -18,8 +18,10 @@
         "node-ts": "^2.1.2",
         "raspi": "^4.0.0",
         "raspi-gpio": "^4.0.2",
+        "reflect-metadata": "^0.1.10",
         "source-map": "^0.5.6",
         "source-map-loader": "^0.2.1",
+        "typeorm": "0.1.0-alpha.35",
         "winston": "^2.3.1",
         "zongji": "^0.4.3"
     },
