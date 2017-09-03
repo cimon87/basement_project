@@ -7,8 +7,7 @@ import { GenericResult } from "./Models/GenericResult";
 import { Messages } from "./Statics/Messages";
 import { CommandExecutorsFactory } from "./Executors/CommandExecutorsFactory";
 import { ICommandExecutor } from "./Executors/ICommandExecutor";
-import { GenericPinListener } from "./Listeners/GenericPinListener";
-import { Pins } from "./Statics/Pins";
+import { Pins, GenericPinReader, GenericPinWriter } from "./Gpio/All";
 import { DigitalOutput, PULL_DOWN, PULL_NONE, PULL_UP} from 'raspi-gpio';
 
 export class BasementSecurity
@@ -16,14 +15,14 @@ export class BasementSecurity
     public gammu: GammuDatabase;
     public phoneVerificator : PhoneVerificator;
     public logger : Logger;
-    public switchPinListener : GenericPinListener;
+    public switchPinListener : GenericPinReader;
 
     public Run() : void
     {
-        this.logger = new Logger('generic.log');
+        this.logger = new Logger('log.log');
         this.phoneVerificator = new PhoneVerificator();
 
-        this.switchPinListener = new GenericPinListener(Pins.CONTRACTON, PULL_UP)
+        this.switchPinListener = new GenericPinReader(Pins.CONTACTON, PULL_UP)
         this.switchPinListener.AttachListener((state) => { this.SwitchInputHandler(state)})
         this.switchPinListener.Listen();
 

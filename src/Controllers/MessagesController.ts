@@ -2,10 +2,10 @@ import { GammuDatabase } from "../Gammu/GammuDatabase";
 
 export class MessagesController
 {
-    public static GetInbox(request, response) 
+    public GetInbox(request, response) : void
     {
-        var gammu = GammuDatabase.getInstance();
-        
+        let gammu = GammuDatabase.getInstance();
+
         gammu.GetInbox()
             .then((result) => {
             response.json(result);
@@ -14,14 +14,21 @@ export class MessagesController
         })
     }
 
-    public static GetSendItems(request, response) 
+    public GetSentItems(request, response) : void
     {
+        let gammu = GammuDatabase.getInstance();
 
+        gammu.GetSentItems()
+        .then((result) => {
+            response.json(result);
+        }).catch((error) =>{
+            response.send(error);
+        })
     }
 
-    public static SendMessage(request, response)
+    public SendMessage(request, response) : void
     {
-        var gammu = GammuDatabase.getInstance();
+        let gammu = GammuDatabase.getInstance();
 
         gammu.SendMessageJSON(request.body)
         .then((result) => {

@@ -15,17 +15,15 @@ class GammuDatabase
     private _logger : Logger;
 
     private static _instance:GammuDatabase = new GammuDatabase();
-    
-       private _score:number = 0;
-    
-       constructor() {
-           if(GammuDatabase._instance){
-               throw new Error("Error: Instantiation failed: Use SingletonDemo.getInstance() instead of new.");
-           }
 
-           this._logger = new Logger("mysql.log");
-           GammuDatabase._instance = this;
-       }
+    constructor() {
+        if(GammuDatabase._instance){
+            throw new Error("Error: Instantiation failed: Use SingletonDemo.getInstance() instead of new.");
+        }
+
+        this._logger = new Logger("log.log");
+        GammuDatabase._instance = this;
+    }
     
     public static getInstance():GammuDatabase
     {
@@ -65,6 +63,11 @@ class GammuDatabase
                 {
                     throw new Error('Not connected to database');    
                 }
+
+                if(jsonDeserialized.to == null || jsonDeserialized.text == null)
+                {
+                    reject("Values not set");
+                }
         
                 this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ jsonDeserialized.to +"','" + jsonDeserialized.text + "');",
                 (error, results, fields) => {
@@ -97,7 +100,7 @@ class GammuDatabase
     public GetInbox() : any
     {
         return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT ID, SenderNumber, TextDecoded, ReceivingDateTime FROM inbox', (error, results, fields) => {
+            var query = this._connection.query('SELECT ID, SenderNumber, TextDecoded, ReceivingDateTime FROM inbox ORDER BY ReceivingDateTime DESC', (error, results, fields) => {
                 if (error) {
                     reject(error.stack);
                 }
@@ -108,10 +111,10 @@ class GammuDatabase
         });
     }
 
-    public GetOutbox() :  Promise<any>
+    public GetSentItems() :  Promise<any>
     {
         return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM outbox', (error, results, fields) => {
+            var query = this._connection.query('SELECT UpdatedInDB, InsertIntoDB, SendingDateTime, DestinationNumber, SMSCNumber, TextDecoded, ID, Status  FROM sentitems ORDER BY UpdatedInDB DESC', (error, results, fields) => {
                 if (error) {
                     reject(error.stack);
                 }

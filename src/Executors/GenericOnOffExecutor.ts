@@ -4,7 +4,7 @@ import { Logger } from "../Logger/Logger";
 import * as Gpio from 'raspi-gpio';
 import { CommandEnum } from "../Enums/CommandEnum";
 import { Command } from "../Models/Command";
-import { Pins } from "../Statics/Pins";
+import { Pins } from "../Gpio/All";
 
 export class GenericOnOffExecutor implements ICommandExecutor
 {

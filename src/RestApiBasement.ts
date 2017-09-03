@@ -25,7 +25,7 @@ class RestApiBasement
         this.app.use(bodyParser.json());
 
         var router = new RestApiRouter();
-        router.Route(this.app);
+        router.Route(this.app, this.security);
 
         this.app.listen(this.port);
 

@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "command": "tsc",
     "isShellCommand": true,
-    "args": ["-p", "."],
+    "args": ["-p", ".", "--watch"],
     //"args": ["--module", "amd", "--target", "ES5", "${file}"],
     "showOutput": "silent",
     "problemMatcher": "$tsc",

@@ -2,7 +2,7 @@
 /// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
 import * as Gpio from 'raspi-gpio';
 import * as chai from 'chai';
-import { Pins } from "../src/Statics/Pins";
+import { Pins } from "../src/Gpio/All";
 
 @suite class PinTest {
 
