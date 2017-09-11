@@ -15,10 +15,11 @@ import {AutoWired, Inject, Singleton} from "typescript-ioc";
 @AutoWired
 export class BasementSecurity
 {
-    
+    @Inject
+    public gammu: GammuDatabase;
+
     public sirenPin: GenericPinWriter;
     public ledPin: GenericPinWriter;
-    public gammu: GammuDatabase;
     public phoneVerificator : PhoneVerificator;
     public logger : Logger;
     public switchPinListener : GenericPinReader;
@@ -53,7 +54,7 @@ export class BasementSecurity
         this.switchPinListener.AttachListener((state) => { this.SwitchSecurityOnOff(state)})
         this.switchPinListener.Listen();
 
-        this.gammu = GammuDatabase.getInstance();
+        
         this.gammu.AddListener((newRow) => { this.NewMessageHandler(newRow) });
         
         this.gammu.Connect();

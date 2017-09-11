@@ -1,12 +1,13 @@
 import { GammuDatabase } from "../Gammu/GammuDatabase";
+import { Inject } from "typescript-ioc";
 
 export class MessagesController
 {
+    @Inject
+    gammu : GammuDatabase;
     public GetInbox(request, response) : void
     {
-        let gammu = GammuDatabase.getInstance();
-
-        gammu.GetInbox()
+        this.gammu.GetInbox()
             .then((result) => {
             response.json(result);
         }).catch((error) =>{
@@ -16,9 +17,7 @@ export class MessagesController
 
     public GetSentItems(request, response) : void
     {
-        let gammu = GammuDatabase.getInstance();
-
-        gammu.GetSentItems()
+        this.gammu.GetSentItems()
         .then((result) => {
             response.json(result);
         }).catch((error) =>{
@@ -28,9 +27,7 @@ export class MessagesController
 
     public SendMessage(request, response) : void
     {
-        let gammu = GammuDatabase.getInstance();
-
-        gammu.SendMessageJSON(request.body)
+        this.gammu.SendMessageJSON(request.body)
         .then((result) => {
             response.json(result);
         }).catch((error) =>{

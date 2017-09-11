@@ -4,8 +4,10 @@ import { Phones } from '../Statics/Phones';
 import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
+import { AutoWired, Singleton } from 'typescript-ioc';
 
-
+@Singleton
+@AutoWired
 class GammuDatabase
 {
     private _inputListener : (param : any) => void;
@@ -13,22 +15,6 @@ class GammuDatabase
     private _connection : MySQL.IConnection;
     private _mysqlEvents : MySQLEvents.MySQLEvents;
     private _logger : Logger;
-
-    private static _instance:GammuDatabase = new GammuDatabase();
-
-    constructor() {
-        if(GammuDatabase._instance){
-            throw new Error("Error: Instantiation failed: Use SingletonDemo.getInstance() instead of new.");
-        }
-
-        this._logger = new Logger("log.log");
-        GammuDatabase._instance = this;
-    }
-    
-    public static getInstance():GammuDatabase
-    {
-        return GammuDatabase._instance;
-    }
 
     public AddListener(inputListener : (param : any) => void) {
         this._inputListener = inputListener;
