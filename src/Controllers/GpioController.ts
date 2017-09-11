@@ -1,16 +1,19 @@
 import { BasementSecurity } from "../BasementSecurity";
+import { AutoWired, Inject, Singleton} from "typescript-ioc";
+import { GpioRegistry } from "../Gpio/GpioRegistry";
+import { IController } from "./IController";
 
-export class GpioController
+export class GpioController implements IController
 {
-    private basementSecurity : BasementSecurity;
+    @Inject
+    public gpioRegistry : GpioRegistry;
 
-    constructor(BasementSecurity)
+    constructor()
     {
-        this.basementSecurity = BasementSecurity;
     }
 
     public GetAll(request, response)
     {
-        
+        response.json(this.gpioRegistry.All());
     }
 }

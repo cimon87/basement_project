@@ -8,5 +8,7 @@
     //"args": ["--module", "amd", "--target", "ES5", "${file}"],
     "showOutput": "silent",
     "problemMatcher": "$tsc",
-    "typescript.check.tscVersion": false
+    "typescript.check.tscVersion": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
 }

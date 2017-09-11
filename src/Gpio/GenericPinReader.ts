@@ -1,6 +1,9 @@
+import {AutoWired, Inject} from "typescript-ioc";
 import { DigitalInput } from 'raspi-gpio';
 import { List } from "linqts/dist/linq";
 import { IPin } from "./IPin";
+import { GpioRegistry } from "./GpioRegistry";
+import { Pins } from "./Pins";
 
 export class GenericPinReader implements IPin
 {
@@ -9,6 +12,9 @@ export class GenericPinReader implements IPin
 
     private pin: DigitalInput;
     private listeners : List<(state: number) => void>;
+
+    @Inject
+    public Registry : GpioRegistry;
 
     constructor(pinName: string, pullUpNumber: number) {
 
@@ -21,6 +27,9 @@ export class GenericPinReader implements IPin
         })
 
         this.listeners = new List<(state: number) => void>();
+        this.Registry.Register(this);
+
+        this.State = this.pin.read();
     }
 
     public AttachListener(listener: (state: number) => void) {
@@ -36,5 +45,14 @@ export class GenericPinReader implements IPin
                 listener(state);
             })
         })
+    }
+
+    public ToDTO()
+    {
+        return {
+            State : this.State,
+            PinName : this.PinName,
+            Description : Pins.GetDescription(this.PinName)
+        }
     }
 }

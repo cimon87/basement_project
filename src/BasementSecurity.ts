@@ -9,21 +9,48 @@ import { CommandExecutorsFactory } from "./Executors/CommandExecutorsFactory";
 import { ICommandExecutor } from "./Executors/ICommandExecutor";
 import { Pins, GenericPinReader, GenericPinWriter } from "./Gpio/All";
 import { DigitalOutput, PULL_DOWN, PULL_NONE, PULL_UP} from 'raspi-gpio';
+import {AutoWired, Inject, Singleton} from "typescript-ioc";
 
+@Singleton
+@AutoWired
 export class BasementSecurity
 {
+    
+    public sirenPin: GenericPinWriter;
+    public ledPin: GenericPinWriter;
     public gammu: GammuDatabase;
     public phoneVerificator : PhoneVerificator;
     public logger : Logger;
     public switchPinListener : GenericPinReader;
 
+    private enabled : boolean = false;
+    public get Enabled () : boolean{
+        return this.enabled;
+    }
+
+    public set Enabled (value : boolean){
+        this.enabled = value;
+        this.ledPin.State = value ? 0 : 1;
+    }
+
+    public SilentMode : boolean = false;
+    public SmsEnabled : boolean = false;
+
     public Run() : void
     {
+        this.ledPin = new GenericPinWriter(Pins.LED);
+        this.sirenPin = new GenericPinWriter(Pins.SIREN);
+
         this.logger = new Logger('log.log');
         this.phoneVerificator = new PhoneVerificator();
 
         this.switchPinListener = new GenericPinReader(Pins.CONTACTON, PULL_UP)
         this.switchPinListener.AttachListener((state) => { this.SwitchInputHandler(state)})
+        this.switchPinListener.Listen();
+
+        this.switchPinListener = new GenericPinReader(Pins.SECURITY_SWITCH, PULL_UP)
+        this.Enabled = this.switchPinListener.State === 1;
+        this.switchPinListener.AttachListener((state) => { this.SwitchSecurityOnOff(state)})
         this.switchPinListener.Listen();
 
         this.gammu = GammuDatabase.getInstance();
@@ -32,9 +59,22 @@ export class BasementSecurity
         this.gammu.Connect();
     }
 
-    public SwitchInputHandler(state : number) : void{
-        var gpio = new DigitalOutput("GPIO20");
-        gpio.write(state);
+    public SwitchSecurityOnOff(state: number): any {
+        this.Enabled = state == 1;
+    }
+
+    public SwitchInputHandler(state : number) : void
+    {
+        this.sirenPin.State = 0;
+        if(this.Enabled && !this.SilentMode)
+        {
+            this.sirenPin.State = state;
+        }
+
+        if(this.Enabled && this.SmsEnabled)
+        {
+            this.gammu.SendMessage("+48603705226", "Someone is in the basement!!")
+        }
     }
 
     public NewMessageHandler(newRow : any) : void
@@ -111,10 +151,8 @@ export class BasementSecurity
         return result.IsSuccess();
     }
 
-    SIGINT() : void
+    public Dispose() : void
     {
-        process.on('SIGINT', () => {
-            this.gammu.Disconnect();
-        })
+        this.gammu.Disconnect();
     }
 }
