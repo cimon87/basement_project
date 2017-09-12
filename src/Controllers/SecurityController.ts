@@ -1,5 +1,6 @@
 import { BasementSecurity } from "../BasementSecurity";
 import { Inject } from "typescript-ioc";
+import { BoolExt } from "../Statics/BoolExt";
 
 export class SecurityController
 {
@@ -8,7 +9,7 @@ export class SecurityController
 
     public Switch(req, res) : void
     {
-        if(req.body.IsEnabled === null && req.body.IsInSilentMode === null)
+        if(req.body.IsEnabled == null && req.body.SmsEnabled == null && req.body.SmsEnabled)
         {
             res.send("Error: body does not contain IsEnabled or IsInSilentMode");
         }
@@ -16,27 +17,29 @@ export class SecurityController
         {
             if(req.body.Enabled !== null)
             {
-                this.Security.Enabled = req.body.Enabled;
+                this.Security.Enabled = BoolExt.ToBoolean(req.body.Enabled);
             }
 
-            if(req.body.IsInSilentMode !== null)
+            if(req.body.SilentMode != null)
             {
-                this.Security.SilentMode = req.body.SilentMode;
+                this.Security.SilentMode = BoolExt.ToBoolean(req.body.SilentMode);
             }
 
-            if(req.body.SmsEnabled !== null)
+            if(req.body.SmsEnabled != null)
             {
-                this.Security.SmsEnabled = req.body.SmsEnabled;
+                this.Security.SmsEnabled = BoolExt.ToBoolean(req.body.SmsEnabled);
             }  
+
+            return this.Status(req, res);
         }
     }
 
     public Status(req, res) : void
     {
         return res.json({ 
-            Enabled : this.Security.Enabled,
-            SilentMode : this.Security.SilentMode,
-            SmsEnabled : this.Security.SmsEnabled
+            Enabled : BoolExt.ToNumber(this.Security.Enabled),
+            SilentMode : BoolExt.ToNumber(this.Security.SilentMode),
+            SmsEnabled : BoolExt.ToNumber(this.Security.SmsEnabled)
          })
     }
 }

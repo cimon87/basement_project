@@ -18,6 +18,7 @@ class RestApiBasement
 
     constructor()
     {
+        this.ListenOnExit();
         this.Security.Run();
 
         this.app = express();
@@ -33,25 +34,14 @@ class RestApiBasement
     public Start() : void
     {
         this.http = this.app.listen(this.port);
-        this.ListenOnExit();
+        
 
         console.log('API started on: ' + this.port);
     }
 
-    public Dispose() : void
-    {
-        this.http.close(); 
-        this.Security.Dispose(); 
-
-        Exec.exec('sudo rm /var/run/pigpio.pid', function()
-        {    
-            process.exit();
-        });
-    }
-
     public ListenOnExit(): void 
     {
-        process.on('SIGUSR2',  () => {
+        process.once('SIGUSR2',  () => {
             this.Dispose();
         });
 
@@ -69,6 +59,24 @@ class RestApiBasement
 
         process.on('SIGTERM',  () => {
             this.Dispose();
+        });
+    }
+
+    public Dispose() : void
+    {
+        console.log("Disposing");
+
+        this.http.close(); 
+        this.Security.Dispose(); 
+
+        Exec.exec('sudo rm /var/run/pigpio.pid', function(error)
+        {    
+            if(error)
+            {
+                console.log(error);
+            }
+
+            process.exit();
         });
     }
 }

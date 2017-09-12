@@ -47,12 +47,16 @@ class GammuDatabase
         return new Promise((resolve, reject) =>{
             if(this._connection == null)
                 {
-                    throw new Error('Not connected to database');    
+                    let message = 'Not connected to database';
+                    this._logger.error(message);
+                    throw new Error();    
                 }
 
                 if(jsonDeserialized.to == null || jsonDeserialized.text == null)
                 {
-                    reject("Values not set");
+                    let message = 'Props to and text not set';
+                    this._logger.error(message);
+                    reject(message);
                 }
         
                 this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ jsonDeserialized.to +"','" + jsonDeserialized.text + "');",
@@ -79,6 +83,9 @@ class GammuDatabase
         (error, results, fields) => {
             if (error) {
                 this._logger.error(error.stack);
+            }
+            else{
+                this._logger.log("Sent to : ")
             }
         });
     }

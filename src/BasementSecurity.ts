@@ -23,6 +23,7 @@ export class BasementSecurity
     public phoneVerificator : PhoneVerificator;
     public logger : Logger;
     public switchPinListener : GenericPinReader;
+    public doorPinListener : GenericPinReader;
 
     private enabled : boolean = false;
     public get Enabled () : boolean{
@@ -31,11 +32,17 @@ export class BasementSecurity
 
     public set Enabled (value : boolean){
         this.enabled = value;
-        this.ledPin.State = value ? 0 : 1;
+        if(value == true)
+        {
+            this.ledPin.State = 0;
+        }
+        else{
+            this.ledPin.State = 1;
+        }
     }
 
-    public SilentMode : boolean = false;
-    public SmsEnabled : boolean = false;
+    public SilentMode : boolean;
+    public SmsEnabled : boolean;
 
     public Run() : void
     {
@@ -45,19 +52,20 @@ export class BasementSecurity
         this.logger = new Logger('log.log');
         this.phoneVerificator = new PhoneVerificator();
 
-        this.switchPinListener = new GenericPinReader(Pins.CONTACTON, PULL_UP)
-        this.switchPinListener.AttachListener((state) => { this.SwitchInputHandler(state)})
-        this.switchPinListener.Listen();
+        this.doorPinListener = new GenericPinReader(Pins.CONTACTON, PULL_UP)
+        this.doorPinListener.AttachListener((state) => { this.SwitchInputHandler(state)})
+        this.doorPinListener.Listen();
 
         this.switchPinListener = new GenericPinReader(Pins.SECURITY_SWITCH, PULL_UP)
-        this.Enabled = this.switchPinListener.State === 1;
         this.switchPinListener.AttachListener((state) => { this.SwitchSecurityOnOff(state)})
         this.switchPinListener.Listen();
-
         
         this.gammu.AddListener((newRow) => { this.NewMessageHandler(newRow) });
-        
         this.gammu.Connect();
+
+        this.SilentMode = false;
+        this.SmsEnabled = true;
+        this.Enabled = this.switchPinListener.State == 1;
     }
 
     public SwitchSecurityOnOff(state: number): any {
@@ -66,15 +74,18 @@ export class BasementSecurity
 
     public SwitchInputHandler(state : number) : void
     {
-        this.sirenPin.State = 0;
-        if(this.Enabled && !this.SilentMode)
+        if(state == 1)
         {
-            this.sirenPin.State = state;
-        }
-
-        if(this.Enabled && this.SmsEnabled)
-        {
-            this.gammu.SendMessage("+48603705226", "Someone is in the basement!!")
+            this.sirenPin.State = 0;
+            if(this.Enabled && !this.SilentMode)
+            {
+                this.sirenPin.State = state;
+            }
+    
+            if(this.Enabled && this.SmsEnabled)
+            {
+                this.gammu.SendMessage("+48603705226", "Someone is in the basement!!")
+            }
         }
     }
 
