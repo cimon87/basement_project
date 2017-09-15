@@ -15,7 +15,7 @@ export class SecurityController
         }
         else
         {
-            if(req.body.Enabled !== null)
+            if(req.body.Enabled != null)
             {
                 this.Security.Enabled = BoolExt.ToBoolean(req.body.Enabled);
             }

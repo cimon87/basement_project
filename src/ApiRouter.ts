@@ -33,7 +33,8 @@ export class ApiRouter
             .get((req, res) => this.logsController.GetAll(req, res)); 
 
         app.route('/gpio')
-            .get((req, res) => this.gpioController.GetAll(req, res));
+            .get((req, res) => this.gpioController.GetAll(req, res))
+            .post((req,res) => this.gpioController.SetState(req, res));
 
         app.route('/security/status')
             .get((req, res) => this.securityController.Status(req, res))

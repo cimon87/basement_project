@@ -11,6 +11,7 @@ export class GenericPinWriter implements IPin
     public Registry : GpioRegistry;
 
     public PinName : string;
+    
     public get State() : number{
         return this._state;
     }

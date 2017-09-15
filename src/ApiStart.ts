@@ -6,6 +6,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as Exec from 'child_process';
 import { Server } from "http";
+import * as nodemon from 'nodemon';
 
 class RestApiBasement
 {
@@ -41,7 +42,7 @@ class RestApiBasement
 
     public ListenOnExit(): void 
     {
-        process.once('SIGUSR2',  () => {
+        nodemon.on('exit',  () => {
             this.Dispose();
         });
 

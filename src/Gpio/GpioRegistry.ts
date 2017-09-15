@@ -13,14 +13,32 @@ export class GpioRegistry
     constructor()
     {
     }
+
     public Register(pin: IPin) : void
     {
-        console.log("Registred " + pin.PinName);
         this.gpios.Add(pin);
     }
 
-    public All()
+    public All() : Array<any>
     {
         return this.gpios.Select(x => x.ToDTO()).ToArray();
+    }
+
+    public SetGpioState(pinName : string, value : number) : void
+    {
+        let pin : IPin = this.gpios.FirstOrDefault(x => x.PinName === pinName);
+        if(pin == null)
+        {
+            throw new Error("Gpio not found")
+        }
+
+        if(pin instanceof GenericPinWriter)
+        {
+            pin.State = value;            
+        }
+        else
+        {
+            throw new Error("Gpio is not writable");
+        }
     }
 }
