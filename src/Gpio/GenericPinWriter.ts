@@ -35,7 +35,8 @@ export class GenericPinWriter implements IPin
         return {
             State : this.State,
             PinName : this.PinName,
-            Description : Pins.GetDescription(this.PinName)
+            Description : Pins.GetDescription(this.PinName),
+            ReadOnly: 0,
         }
     }
     
