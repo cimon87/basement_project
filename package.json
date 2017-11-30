@@ -47,7 +47,8 @@
         "pretest": "tsc",
         "test": "nyc mocha",
         "watch": "mocha-typescript-watch",
-        "prepare": "tsc"
+        "prepare": "tsc",
+        "start": "sudo node src/ApiStart.js"
     },
     "author": "",
     "license": "ISC"

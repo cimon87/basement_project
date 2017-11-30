@@ -4,7 +4,7 @@ import { Phones } from '../Statics/Phones';
 import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
-import { AutoWired, Singleton } from 'typescript-ioc';
+import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 
 @Singleton
 @AutoWired
@@ -14,6 +14,8 @@ class GammuDatabase
     private _eventsCredentials : any;
     private _connection : MySQL.IConnection;
     private _mysqlEvents : MySQLEvents.MySQLEvents;
+
+    @Inject
     private _logger : Logger;
 
     public AddListener(inputListener : (param : any) => void) {
@@ -85,7 +87,7 @@ class GammuDatabase
                 this._logger.error(error.stack);
             }
             else{
-                this._logger.log("Sent to : ")
+                this._logger.log("Sent to " + to + ": " + text + " ");
             }
         });
     }

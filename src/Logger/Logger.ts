@@ -2,12 +2,16 @@ import { ILogger } from "./ILogger";
 import * as fs from "fs";
 import * as winston from 'winston';
 import * as path from 'path';
+import { AutoWired, Singleton } from "typescript-ioc";
 
+@Singleton
+@AutoWired
 export class Logger implements ILogger {
     public static logFolder : string = "logs";
+    public logName:string = 'log.log';
     public _logger : winston.LoggerInstance;
 
-    constructor(logName:string)
+    constructor()
     {
         if ( !fs.existsSync( Logger.logFolder ) ) {
             fs.mkdirSync( Logger.logFolder );
@@ -15,7 +19,7 @@ export class Logger implements ILogger {
 
         this._logger = new winston.Logger({
             transports: [
-                new (winston.transports.File)({ filename: path.join(Logger.logFolder, '/' + logName) }),
+                new (winston.transports.File)({ filename: path.join(Logger.logFolder, '/' + this.logName) }),
                 new (winston.transports.Console)()
             ]
         });

@@ -5,16 +5,19 @@ import * as Gpio from 'raspi-gpio';
 import { CommandEnum } from "../Enums/CommandEnum";
 import { Command } from "../Models/Command";
 import { Pins } from "../Gpio/All";
+import { Inject } from "typescript-ioc";
 
 export class GenericOnOffExecutor implements ICommandExecutor
 {
     private LED_GPIO : number = 18;
 
     command: Command;
-    Logger: Logger;
     SmsDatabase: GammuDatabase;
     LedGpio : Gpio.DigitalOutput;
     out : Gpio.DigitalInput;
+
+    @Inject
+    Logger: Logger;
 
     constructor(command : Command)
     {

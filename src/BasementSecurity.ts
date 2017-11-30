@@ -18,10 +18,12 @@ export class BasementSecurity
     @Inject
     public gammu: GammuDatabase;
 
+    @Inject
+    public logger : Logger;
+    
     public sirenPin: GenericPinWriter;
     public ledPin: GenericPinWriter;
     public phoneVerificator : PhoneVerificator;
-    public logger : Logger;
     public switchPinListener : GenericPinReader;
     public doorPinListener : GenericPinReader;
 
@@ -38,6 +40,10 @@ export class BasementSecurity
         }
         else{
             this.ledPin.State = 1;
+            if(this.sirenPin.State == 1)
+            {
+                this.sirenPin.State = 0;
+            }
         }
     }
 
@@ -49,7 +55,6 @@ export class BasementSecurity
         this.ledPin = new GenericPinWriter(Pins.LED);
         this.sirenPin = new GenericPinWriter(Pins.SIREN);
 
-        this.logger = new Logger('log.log');
         this.phoneVerificator = new PhoneVerificator();
 
         this.doorPinListener = new GenericPinReader(Pins.CONTACTON, PULL_UP)
@@ -86,6 +91,9 @@ export class BasementSecurity
             {
                 this.gammu.SendMessage("+48603705226", "Someone is in the basement!!")
             }
+        }
+        else{
+            this.sirenPin.State = 0;
         }
     }
 
