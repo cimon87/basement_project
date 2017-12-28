@@ -6,5 +6,6 @@
         "emitDecoratorMetadata": true, 
         "experimentalDecorators": true,
         "lib": ["es5"]
-    }
+    },
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

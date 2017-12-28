@@ -19,7 +19,7 @@ export class Logger implements ILogger {
 
         this._logger = new winston.Logger({
             transports: [
-                new (winston.transports.File)({ filename: path.join(Logger.logFolder, '/' + this.logName) }),
+                new (winston.transports.File)({json:true, filename: path.join(Logger.logFolder, '/' + this.logName) }),
                 new (winston.transports.Console)()
             ]
         });

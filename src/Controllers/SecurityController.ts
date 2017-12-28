@@ -9,7 +9,7 @@ export class SecurityController
 
     public Switch(req, res) : void
     {
-        if(req.body.IsEnabled == null && req.body.SmsEnabled == null && req.body.SmsEnabled)
+        if(req.body.Enabled == null && req.body.SmsEnabled == null && req.body.SilentMode)
         {
             res.send("Error: body does not contain IsEnabled or IsInSilentMode");
         }
