@@ -9,9 +9,9 @@ export class SecurityController
 
     public Switch(req, res) : void
     {
-        if(req.body.Enabled == null && req.body.SmsEnabled == null && req.body.SilentMode)
+        if(req.body.Enabled === null && req.body.SmsEnabled === null && req.body.SilentMode === null)
         {
-            res.send("Error: body does not contain IsEnabled or IsInSilentMode");
+            res.send("Error: body does not contain Enabled or SilentMode");
         }
         else
         {
