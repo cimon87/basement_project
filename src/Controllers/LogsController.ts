@@ -6,10 +6,18 @@ export class LogsController
     {
         var filename = "logs/log.log";
         try{
-            fs.accessSync(filename);
+            var allLogs = [];
+            var lineReader = require('readline').createInterface({
+                input: require('fs').createReadStream(filename)
+            });
+            
+            lineReader.on('line', function (line) {
+                allLogs.push(JSON.parse(line));
+            });
 
-            let buffer = fs.readFileSync(filename);
-            response.send(buffer);
+            lineReader.on('close', function() {
+                response.send(allLogs);
+            });
         }
         catch(e)
         {

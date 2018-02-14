@@ -10,6 +10,7 @@ import { ICommandExecutor } from "./Executors/ICommandExecutor";
 import { Pins, GenericPinReader, GenericPinWriter } from "./Gpio/All";
 import { DigitalOutput, PULL_DOWN, PULL_NONE, PULL_UP} from 'raspi-gpio';
 import {AutoWired, Inject, Singleton} from "typescript-ioc";
+import { ILogger } from './Logger/ILogger';
 
 @Singleton
 @AutoWired
@@ -19,7 +20,7 @@ export class BasementSecurity
     public gammu: GammuDatabase;
 
     @Inject
-    public logger : Logger;
+    public logger : ILogger;
     
     public sirenPin: GenericPinWriter;
     public ledPin: GenericPinWriter;
@@ -28,6 +29,7 @@ export class BasementSecurity
     public doorPinListener : GenericPinReader;
 
     private enabled : boolean = false;
+    
     public get Enabled () : boolean{
         return this.enabled;
     }
