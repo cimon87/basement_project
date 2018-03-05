@@ -1,11 +1,15 @@
 import { BasementSecurity } from "../BasementSecurity";
 import { Inject } from "typescript-ioc";
 import { BoolExt } from "../Statics/BoolExt";
+import { GammuDatabase } from "../Gammu/GammuDatabase";
 
 export class SecurityController
 {
     @Inject
     public Security : BasementSecurity;
+
+    @Inject
+    public GammuDatabase : GammuDatabase;
 
     public Switch(req, res) : void
     {
@@ -41,5 +45,32 @@ export class SecurityController
             SilentMode : BoolExt.ToNumber(this.Security.SilentMode),
             SmsEnabled : BoolExt.ToNumber(this.Security.SmsEnabled)
          })
+    }
+
+    public GetSecurityPhones(req, res) : void
+    {
+        var phones = this.GammuDatabase.GetSecurityPhones()
+        .then((result) => {
+            res.json(result);
+        }).catch((error) =>{
+            res.send(error);
+        })
+    }
+
+    public CreateSecurityPhone(req, res): any {
+        var phones = this.GammuDatabase.CreateSecurityPhone(req.body)
+        .then((result) => {
+            res.json(result);
+        }).catch((error) =>{
+            res.send(error);
+        })
+    }
+    public UpdateSecurityPhones(req, res): any {
+        var phones = this.GammuDatabase.UpdateSecurityPhone(req.body)
+        .then((result) => {
+            res.json(result);
+        }).catch((error) =>{
+            res.send(error);
+        })
     }
 }

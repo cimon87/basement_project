@@ -120,6 +120,27 @@ class GammuDatabase
         });
     }
 
+    public GetSecurityPhones() :  Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            var query = this._connection.query('SELECT * FROM security_phone', (error, results, fields) => {
+                if (error) {
+                    reject(error.stack);
+                }
+                else{
+                    resolve(results);
+                }
+            });     
+        });
+    }
+
+    public UpdateSecurityPhone(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
+    public CreateSecurityPhone(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
+
     public AttachListener() : void
     {
         this._mysqlEvents = MySQLEvents(Credentials.MySQLEventsCredentials);

@@ -39,5 +39,10 @@ export class ApiRouter
         app.route('/security/status')
             .get((req, res) => this.securityController.Status(req, res))
             .post((req, res) => this.securityController.Switch(req, res));
+
+        app.route('/security/phones')
+            .get((req, res) => this.securityController.GetSecurityPhones(req, res))
+            .post((req, res) => this.securityController.UpdateSecurityPhones(req, res))
+            .put((req, res) => this.securityController.CreateSecurityPhone(req, res));
     }
 }
