@@ -40,9 +40,10 @@ export class ApiRouter
             .get((req, res) => this.securityController.Status(req, res))
             .post((req, res) => this.securityController.Switch(req, res));
 
-        app.route('/security/phones')
+        app.route('/security/permissions')
             .get((req, res) => this.securityController.GetSecurityPhones(req, res))
             .post((req, res) => this.securityController.UpdateSecurityPhones(req, res))
-            .put((req, res) => this.securityController.CreateSecurityPhone(req, res));
+            .put((req, res) => this.securityController.CreateSecurityPhone(req, res))
+            .delete((res, req) => this.securityController.DeleteSecurityPhone(req, res));
     }
 }

@@ -134,11 +134,54 @@ class GammuDatabase
         });
     }
 
-    public UpdateSecurityPhone(arg0: any): any {
-        throw new Error("Method not implemented.");
+    public UpdateSecurityPhone(data): any {
+        if(this._connection == null)
+        {
+            throw new Error('Not connected to database');    
+        }
+
+        this._connection.query("UPDATE security_phone SET Receive=" + data.Receive + ", Send=" + data.Send + " WHERE Number='" + data.Number + "'",
+        (error, results, fields) => {
+            if (error) {
+                this._logger.error(error.stack);
+            }
+            else{
+                this._logger.log("Updated database with: " + JSON.stringify(data));
+            }
+        });
     }
-    public CreateSecurityPhone(arg0: any): any {
-        throw new Error("Method not implemented.");
+    public CreateSecurityPhone(data): any {
+        if(this._connection == null)
+        {
+            throw new Error('Not connected to database');    
+        }
+
+        this._connection.query("INSERT INTO security_phone(Receive, Send, Number) VALUES (" + data.Receive + "," + data.Send + ",'" + data.Number + "')",
+        (error, results, fields) => {
+            if (error) {
+                this._logger.error(error.stack);
+            }
+            else{
+                this._logger.log("Inserted database with: " + JSON.stringify(data));
+            }
+        });
+    }
+
+    public DeleteSecurityPhone(data): any {
+        if(this._connection == null)
+        {
+            throw new Error('Not connected to database');    
+        }
+
+        this._connection.query("DELETE FROM security_phone WHERE Number='" + data.Number + "'",
+        (error, results, fields) => {
+            if (error) {
+                this._logger.error(error.stack);
+            }
+            else{
+                this._logger.log("Deleted item with number: " + JSON.stringify(data));
+            }
+        });
     }
 
     public AttachListener() : void

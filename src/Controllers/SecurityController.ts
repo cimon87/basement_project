@@ -58,19 +58,15 @@ export class SecurityController
     }
 
     public CreateSecurityPhone(req, res): any {
-        var phones = this.GammuDatabase.CreateSecurityPhone(req.body)
-        .then((result) => {
-            res.json(result);
-        }).catch((error) =>{
-            res.send(error);
-        })
+        this.GammuDatabase.CreateSecurityPhone(req.body)
+        this.GetSecurityPhones(req, res);
     }
     public UpdateSecurityPhones(req, res): any {
-        var phones = this.GammuDatabase.UpdateSecurityPhone(req.body)
-        .then((result) => {
-            res.json(result);
-        }).catch((error) =>{
-            res.send(error);
-        })
+        this.GammuDatabase.UpdateSecurityPhone(req.body);
+        this.GetSecurityPhones(req, res);
+    }
+    public DeleteSecurityPhone(req, res): any {
+        this.GammuDatabase.DeleteSecurityPhone(req.body);
+        this.GetSecurityPhones(req, res);
     }
 }
