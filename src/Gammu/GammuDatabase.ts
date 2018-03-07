@@ -5,6 +5,7 @@ import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
+import { sequelize, SecurityPhone } from './Models';
 
 @Singleton
 @AutoWired
@@ -14,6 +15,7 @@ class GammuDatabase
     private _eventsCredentials : any;
     private _connection : MySQL.IConnection;
     private _mysqlEvents : MySQLEvents.MySQLEvents;
+    private sequelize : any;
 
     @Inject
     private _logger : Logger;
@@ -35,7 +37,7 @@ class GammuDatabase
 
             console.log('connected as id ' + this._connection.threadId);
             this.AttachListener();
-        })
+        })    
     }
 
     public Disconnect() : void
@@ -122,16 +124,7 @@ class GammuDatabase
 
     public GetSecurityPhones() :  Promise<any>
     {
-        return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT * FROM security_phone', (error, results, fields) => {
-                if (error) {
-                    reject(error.stack);
-                }
-                else{
-                    resolve(results);
-                }
-            });     
-        });
+        return SecurityPhone.findAll();
     }
 
     public UpdateSecurityPhone(data): any {
@@ -167,19 +160,19 @@ class GammuDatabase
         });
     }
 
-    public DeleteSecurityPhone(data): any {
+    public DeleteSecurityPhone(number): any {
         if(this._connection == null)
         {
             throw new Error('Not connected to database');    
         }
 
-        this._connection.query("DELETE FROM security_phone WHERE Number='" + data.Number + "'",
+        this._connection.query("DELETE FROM security_phone WHERE Number='" + number + "'",
         (error, results, fields) => {
             if (error) {
                 this._logger.error(error.stack);
             }
             else{
-                this._logger.log("Deleted item with number: " + JSON.stringify(data));
+                this._logger.log("Deleted item with number: " + number);
             }
         });
     }

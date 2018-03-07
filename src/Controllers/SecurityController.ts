@@ -66,7 +66,7 @@ export class SecurityController
         this.GetSecurityPhones(req, res);
     }
     public DeleteSecurityPhone(req, res): any {
-        this.GammuDatabase.DeleteSecurityPhone(req.body);
+        this.GammuDatabase.DeleteSecurityPhone(req.body.number);
         this.GetSecurityPhones(req, res);
     }
 }
