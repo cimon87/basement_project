@@ -5,7 +5,7 @@ import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
-import { sequelize, SecurityPhone } from './Models';
+import { sequelize, SecurityPhone, SentItems } from './Models';
 
 @Singleton
 @AutoWired
@@ -110,15 +110,10 @@ class GammuDatabase
 
     public GetSentItems() :  Promise<any>
     {
-        return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT UpdatedInDB, InsertIntoDB, SendingDateTime, DestinationNumber, SMSCNumber, TextDecoded, ID, Status  FROM sentitems ORDER BY UpdatedInDB DESC', (error, results, fields) => {
-                if (error) {
-                    reject(error.stack);
-                }
-                else{
-                    resolve(results);
-                }
-            });     
+        return SentItems.findAll({ order: 
+            [ 
+                ['UpdatedInDB', 'DESC'] 
+            ] 
         });
     }
 
