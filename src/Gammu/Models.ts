@@ -38,3 +38,20 @@ export const SentItems = sequelize.define('sentitems', {
   Status: Sequelize.STRING
 }
 );
+
+//outbox (DestinationNumber, TextDecoded)
+export const Outbox = sequelize.define('outbox',{
+  DestinationNumber: Sequelize.STRING,
+  TextDecoded: Sequelize.STRING
+})
+
+//SELECT ID, SenderNumber, TextDecoded, ReceivingDateTime FROM inbox ORDER BY ReceivingDateTime DESC
+export const Inbox = sequelize.define('inbox', {
+  ID: {
+    primaryKey: true,
+    type: Sequelize.INTEGER
+  },
+  SenderNumber: Sequelize.STRING,
+  TextDecoded: Sequelize.STRING,
+  ReceivingDateTime: Sequelize.DATE
+})

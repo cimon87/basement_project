@@ -5,7 +5,8 @@ import { Promise } from 'es6-promise';
 import * as MySQL from 'mysql';
 import * as MySQLEvents from 'mysql-events';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
-import { sequelize, SecurityPhone, SentItems } from './Models';
+import { sequelize, SecurityPhone, SentItems, Inbox, Outbox} from './Models';
+import Sequelize from 'sequelize';
 
 @Singleton
 @AutoWired
@@ -15,7 +16,7 @@ class GammuDatabase
     private _eventsCredentials : any;
     private _connection : MySQL.IConnection;
     private _mysqlEvents : MySQLEvents.MySQLEvents;
-    private sequelize : any;
+    private sequelize : Sequelize;
 
     @Inject
     private _logger : Logger;
@@ -27,84 +28,33 @@ class GammuDatabase
 
     public Connect() : void
     {
-        this._connection = MySQL.createConnection(Credentials.MySQLCredentials);
-
-        this._connection.connect((error : any) => {
-            if(error){
-                this._logger.error('error connecting: ' + error.stack);
-                return;
-            }
-
-            console.log('connected as id ' + this._connection.threadId);
-            this.AttachListener();
-        })    
+        this.AttachListener();  
     }
 
     public Disconnect() : void
     {
         this._mysqlEvents.stop();
         this._connection.end();
+        this.sequelize.close();
     } 
 
-    public SendMessageJSON(jsonDeserialized : any) : Promise<any>
+    public SendMessage(to: string, text: string) : Promise<any>
     {
-        return new Promise((resolve, reject) =>{
-            if(this._connection == null)
-                {
-                    let message = 'Not connected to database';
-                    this._logger.error(message);
-                    throw new Error();    
-                }
-
-                if(jsonDeserialized.to == null || jsonDeserialized.text == null)
-                {
-                    let message = 'Props to and text not set';
-                    this._logger.error(message);
-                    reject(message);
-                }
-        
-                this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ jsonDeserialized.to +"','" + jsonDeserialized.text + "');",
-                (error, results, fields) => {
-                if (error) {
-                    this._logger.error(error.stack);
-                    reject(error.stack);
-                }
-                else{
-                    resolve(results);
-                }
-            })
-        });
+        return Outbox.create({ DestinationNumber: to, TextDecoded: text })
+                .then(result => {
+                    this._logger.log("Sent to " + to + ": " + text + " ");
+                })
+                .catch(error => {
+                    this._logger.error(error);
+                })
     }
 
-    public SendMessage(to: string, text: string) : void
+    public GetInbox() : Promise<any>
     {
-        if(this._connection == null)
-        {
-            throw new Error('Not connected to database');    
-        }
-
-        this._connection.query("INSERT INTO outbox (DestinationNumber, TextDecoded) VALUES ('"+ to +"','" + text + "');",
-        (error, results, fields) => {
-            if (error) {
-                this._logger.error(error.stack);
-            }
-            else{
-                this._logger.log("Sent to " + to + ": " + text + " ");
-            }
-        });
-    }
-
-    public GetInbox() : any
-    {
-        return new Promise((resolve, reject) => {
-            var query = this._connection.query('SELECT ID, SenderNumber, TextDecoded, ReceivingDateTime FROM inbox ORDER BY ReceivingDateTime DESC', (error, results, fields) => {
-                if (error) {
-                    reject(error.stack);
-                }
-                else{
-                    resolve(results);
-                }
-            });     
+        return Inbox.findAll({ order: 
+            [ 
+                ['ReceivingDateTime', 'DESC'] 
+            ] 
         });
     }
 
@@ -122,53 +72,36 @@ class GammuDatabase
         return SecurityPhone.findAll();
     }
 
-    public UpdateSecurityPhone(data): any {
-        if(this._connection == null)
-        {
-            throw new Error('Not connected to database');    
-        }
+    public UpdateSecurityPhone(data): Promise<any> {
 
-        this._connection.query("UPDATE security_phone SET Receive=" + data.Receive + ", Send=" + data.Send + " WHERE Number='" + data.Number + "'",
-        (error, results, fields) => {
-            if (error) {
-                this._logger.error(error.stack);
-            }
-            else{
-                this._logger.log("Updated database with: " + JSON.stringify(data));
-            }
+        return SecurityPhone.update({Receive: data.Receive, Send:data.Send}, {where: { Number: data.Number }})
+        .then(result => {
+            this._logger.log("Updated database with: " + JSON.stringify(data));
+        })
+        .catch(error => {
+            this._logger.error(error);
         });
     }
-    public CreateSecurityPhone(data): any {
-        if(this._connection == null)
-        {
-            throw new Error('Not connected to database');    
-        }
 
-        this._connection.query("INSERT INTO security_phone(Receive, Send, Number) VALUES (" + data.Receive + "," + data.Send + ",'" + data.Number + "')",
-        (error, results, fields) => {
-            if (error) {
-                this._logger.error(error.stack);
-            }
-            else{
+    public CreateSecurityPhone(data): Promise<any> {
+
+        return SecurityPhone.create(data)
+            .then(result => {
                 this._logger.log("Inserted database with: " + JSON.stringify(data));
-            }
-        });
+            })
+            .catch(error => {
+                this._logger.error(error.stack);
+            })
     }
 
-    public DeleteSecurityPhone(number): any {
-        if(this._connection == null)
-        {
-            throw new Error('Not connected to database');    
-        }
+    public DeleteSecurityPhone(number): Promise<any> {
 
-        this._connection.query("DELETE FROM security_phone WHERE Number='" + number + "'",
-        (error, results, fields) => {
-            if (error) {
-                this._logger.error(error.stack);
-            }
-            else{
-                this._logger.log("Deleted item with number: " + number);
-            }
+        return SecurityPhone.destroy({ where: { Number: number } })
+        .then(result => {
+            this._logger.log("Deleted item with number: " + number);
+        })
+        .catch(error => {
+            this._logger.error(error);
         });
     }
 

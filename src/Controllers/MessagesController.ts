@@ -1,10 +1,15 @@
 import { GammuDatabase } from "../Gammu/GammuDatabase";
 import { Inject } from "typescript-ioc";
+import { Logger } from "../Logger/Logger";
 
 export class MessagesController
 {
     @Inject
-    gammu : GammuDatabase;
+    private gammu : GammuDatabase;
+
+    @Inject
+    private _logger : Logger;
+
     public GetInbox(request, response) : void
     {
         this.gammu.GetInbox()
@@ -27,7 +32,14 @@ export class MessagesController
 
     public SendMessage(request, response) : void
     {
-        this.gammu.SendMessageJSON(request.body)
+        if(request.body.to == null || request.body.text == null)
+        {
+            let message = 'Properties to and text not set';
+            this._logger.error(message);
+            response.send(message);
+        }
+
+        this.gammu.SendMessage(request.body.to, request.body.text)
         .then((result) => {
             response.json(result);
         }).catch((error) =>{
