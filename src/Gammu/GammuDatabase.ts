@@ -72,6 +72,11 @@ class GammuDatabase
         return SecurityPhone.findAll();
     }
 
+    public GetSecurityPhoneByNumber(number:string): Promise<any>
+    {
+        return SecurityPhone.findAll({ where : { Number : number }});
+    }
+
     public UpdateSecurityPhone(data): Promise<any> {
 
         return SecurityPhone.update({Receive: data.Receive, Send:data.Send}, {where: { Number: data.Number }})
