@@ -72,6 +72,14 @@ class GammuDatabase
         return SecurityPhone.findAll();
     }
 
+    public GetSecurityPhonesByFilter(filter): Promise<any>
+    {
+        let condition = { where : { }};
+        condition.where = filter;
+
+        return SecurityPhone.findAll(condition);
+    }
+
     public GetSecurityPhoneByNumber(number:string): Promise<any>
     {
         return SecurityPhone.findAll({ where : { Number : number }});

@@ -11,6 +11,7 @@ import { Pins, GenericPinReader, GenericPinWriter } from "./Gpio/All";
 import { DigitalOutput, PULL_DOWN, PULL_NONE, PULL_UP} from 'raspi-gpio';
 import {AutoWired, Inject, Singleton} from "typescript-ioc";
 import { ILogger } from './Logger/ILogger';
+import { Promise } from 'es6-promise';
 
 @Singleton
 @AutoWired
@@ -20,7 +21,7 @@ export class BasementSecurity
     public gammu: GammuDatabase;
 
     @Inject
-    public logger : ILogger;
+    public logger : Logger;
     
     public sirenPin: GenericPinWriter;
     public ledPin: GenericPinWriter;
@@ -91,7 +92,15 @@ export class BasementSecurity
     
             if(this.Enabled && this.SmsEnabled)
             {
-                this.gammu.SendMessage("+48603705226", "Someone is in the basement!!")
+                this.gammu.GetSecurityPhonesByFilter({ Receive: true })
+                .then(numbers => {
+                    for(var i=0; i < numbers.lenght; i++)
+                    {
+                        this.gammu.SendMessage(numbers[i].Number, "Basement alert!");
+                    }
+                })
+                .catch(exception => {
+                })
             }
         }
         else{
@@ -106,28 +115,29 @@ export class BasementSecurity
         let updatedInDb: string = newRow.fields.UpdatedInDB; 
 
         //verify income number 
-        let shouldContinue : boolean = this.VerifyNumber(senderNumber);
-        if(!shouldContinue)
-        {
+        this.VerifyNumber(senderNumber)
+        .then(() => {
+            //verify if older than now minus 2 minutes
+            var date : Date= new Date();
+            date.setMinutes(date.getMinutes() - 2);
+
+            var shouldContinue = this.IsOlderThan(newRow, date);
+            if(!shouldContinue)
+            {
+                console.log('sth wrong with dates');
+                return;
+            }
+
+            console.log("Starting processing");
+            this.ProcessMessage(senderNumber, textDecoded);
+        })
+        .catch(() => {
             console.log('sth wrong with number');
-            return; 
-        }
-
-        //verify if older than now minus 2 minutes
-        var date : Date= new Date();
-        date.setMinutes(date.getMinutes() - 2);
-
-        shouldContinue = this.IsOlderThan(newRow, date);
-        if(!shouldContinue)
-        {
-            console.log('sth wrong with dates');
-            return;
-        }
-
-        this.ProcessMessage(senderNumber, textDecoded);
+        })
     }
 
     public ProcessMessage(number: string, text: string): void {
+
         try
         {
             let command = CommandParser.Parse(text);
@@ -162,15 +172,23 @@ export class BasementSecurity
         return dateIsOk;
     }
 
-    public VerifyNumber(number: string) : boolean 
+    public VerifyNumber(number: string) : Promise<any>
     {
-        let result : GenericResult = this.phoneVerificator.IsOurPhone(number);
-        if(!result.IsSuccess())
-        {
-            this.logger.log(result.Message)
-        }
-
-        return result.IsSuccess();
+        return new Promise((resolve, reject) => {
+            this.gammu.GetSecurityPhonesByFilter({Number: number, Receive: true})
+            .then(data => {
+                if(data[0] != null)
+                {
+                    console.log("success!!");
+                    resolve();
+                }
+                else
+                {
+                    console.log("fail!!");
+                    reject();
+                }
+            })
+        })
     }
 
     public Dispose() : void
