@@ -2,11 +2,12 @@ import { Credentials } from '../Statics/Credentials';
 import { Logger } from '../Logger/Logger';
 import { Phones } from '../Statics/Phones';
 import { Promise } from 'es6-promise';
-import * as MySQL from 'mysql';
-import * as MySQLEvents from 'mysql-events';
+import  * as MySQL from 'mysql';
+import  * as MySQLEvents from 'mysql-events';
 import { AutoWired, Singleton, Inject } from 'typescript-ioc';
 import { sequelize, SecurityPhone, SentItems, Inbox, Outbox} from './Models';
 import Sequelize from 'sequelize';
+const Op = Sequelize.Op;
 
 @Singleton
 @AutoWired
@@ -14,7 +15,7 @@ class GammuDatabase
 {
     private _inputListener : (param : any) => void;
     private _eventsCredentials : any;
-    private _connection : MySQL.IConnection;
+    private _connection : MySQL.Connection;
     private _mysqlEvents : MySQLEvents.MySQLEvents;
     private sequelize : Sequelize;
 
@@ -56,6 +57,23 @@ class GammuDatabase
                 ['ReceivingDateTime', 'DESC'] 
             ] 
         });
+    }
+    public DeleteInboxItem(ids): Promise<any>
+    {
+        if(ids == null || ids.length == 0){
+            throw new Error("Ids cannot be empty");
+        }
+
+        return Inbox.destroy({
+           where: { id : {[Op.or]: ids} }
+         });
+    }
+
+    public DeleteSendItem(ids): Promise<any>
+    {
+        return SentItems.destroy({
+            where: { id : {[Op.or]: ids} }
+          });
     }
 
     public GetSentItems() :  Promise<any>
@@ -125,10 +143,12 @@ class GammuDatabase
         this._mysqlEvents.add(
         'gammu.inbox',
         (oldRow : any, newRow : any, event : any) => {
-            this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);   
-            if(this._inputListener != null)
-            {
-                this._inputListener(newRow);    
+            if(newRow != null && newRow.fields != null){
+                this._logger.log('Message from: ' + newRow.fields.SenderNumber + " Text: " + newRow.fields.TextDecoded);   
+                if(this._inputListener != null)
+                {
+                    this._inputListener(newRow);    
+                }
             }
         }
         );

@@ -20,6 +20,28 @@ export class MessagesController
         })
     }
 
+    public DeleteInboxItem(request, response) : any
+    {
+        this.gammu.DeleteInboxItem(request.body.ids)
+        .then(result => {
+            this.GetInbox(request, response);
+        })
+        .catch((error) =>{
+            response.send(error);
+        })
+    }
+
+    public DeleteSendItem(request, response) : any
+    {
+        this.gammu.DeleteSendItem(request.body.ids)
+        .then(result => {
+            this.GetSentItems(request, response);
+        })
+        .catch((error) =>{
+            response.send(error);
+        })
+    }
+
     public GetSentItems(request, response) : void
     {
         this.gammu.GetSentItems()

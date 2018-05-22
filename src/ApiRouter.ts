@@ -23,11 +23,13 @@ export class ApiRouter
     public Route(app : express.Application) : void
     {
         app.route('/messages/inbox')
-            .get((req, res) => this.messagesController.GetInbox(req, res));
+            .get((req, res) => this.messagesController.GetInbox(req, res))
+            .delete((req, res) => this.messagesController.DeleteInboxItem(req, res));
 
         app.route('/messages/send')
             .get((req, res) => this.messagesController.GetSentItems(req, res))
-            .post((req, res) => this.messagesController.SendMessage(req, res));
+            .post((req, res) => this.messagesController.SendMessage(req, res))
+            .delete((req, res) => this.messagesController.DeleteSendItem(req, res));
 
         app.route('/logs')
             .get((req, res) => this.logsController.GetAll(req, res)); 
